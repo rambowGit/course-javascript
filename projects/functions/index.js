@@ -67,16 +67,12 @@ returnFnResult(hello);
    console.log(f()); // выведет 12
    console.log(f()); // выведет 13
  */
-var num = 0;
+function returnCounter(someInt=0) {
 
-function returnCounter(someInt=num) {
-  num = num + 1;
-  return someInt+1;
+  return function (){
+    return ++someInt
+  }
 }
-
-console.log(returnCounter(num));
-console.log(returnCounter(num));
-console.log(returnCounter(num));
 
 
 
@@ -109,16 +105,20 @@ function returnArgumentsArray() {
 
    console.log(newSum()) выведет 6
  */
-function  bindFunction(fn, x, y){
-  return fn(x,y);
+
+function sum() {
+  // console.log("sum arguments are: ", Array.from(arguments));
+  return   Array.from(arguments).reduce((prev, cur) => prev + cur);
 }
 
-function sum(a, b) {
-  return a + b;
+function bindFunction(fn, ...someArgs) {
+  // console.log("bindFunction arguments are: ", Array.from(arguments));
+  return fn.bind(fn, ...someArgs);
 }
 
+// var newSum = bindFunction( sum,2,8);
+// console.log("Result: " , newSum());
 
-var newSum = bindFunction(sum, 2, 4);
 export {
   returnFirstArgument,
   sumWithDefaults,
