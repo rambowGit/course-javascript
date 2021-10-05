@@ -9,7 +9,14 @@
  Пример:
    forEach([1, 2, 3], (el) => console.log(el))
  */
-function forEach(array, fn) {}
+function forEach(array, callbackFn) {
+  for (let i = 0; i < array.length; i++) {
+    callbackFn(array[i], i, array);
+  }
+}
+
+// const array = [1, 2, 3, 4, 5];
+// forEach(array, (el, el2, el3) => console.log(el, el2, el3));
 
 /*
  Задание 2:
@@ -20,7 +27,17 @@ function forEach(array, fn) {}
  Пример:
    map([1, 2, 3], (el) => el ** 2) // [1, 4, 9]
  */
-function map(array, fn) {}
+function map(array, fn) {
+  const newArray = [];
+  for (let i = 0; i < array.length; i++) {
+    fn(array[i], i, array);
+    newArray.push(array[i] ** 2);
+  }
+
+  return newArray;
+}
+// var result = map([1, 2, 3], (el) => el**2);
+// console.log(result);
 
 /*
  Задание 3:
@@ -31,7 +48,26 @@ function map(array, fn) {}
  Пример:
    reduce([1, 2, 3], (all, current) => all + current) // 6
  */
-function reduce(array, fn, initial) {}
+function reduce(array, fn, initial) {
+  let sum;
+  if (initial) {
+    sum = initial;
+
+    for (let i = 0; i < array.length; i++) {
+      fn(sum, array[i], i, array);
+      // console.log(sum);
+      sum = sum + array[i];
+    }
+  } else {
+    sum = array[0];
+    for (let i = 1; i < array.length; i++) {
+      fn(sum, array[i], i, array);
+      // console.log(sum);
+      sum = sum + array[i];
+    }
+  }
+  return sum;
+}
 
 /*
  Задание 4:
@@ -41,8 +77,14 @@ function reduce(array, fn, initial) {}
  Пример:
    upperProps({ name: 'Сергей', lastName: 'Петров' }) вернет ['NAME', 'LASTNAME']
  */
-function upperProps(obj) {}
+function upperProps(obj) {
+  const capsArray = [];
 
+  for (const field in obj) {
+    capsArray.push(field.toUpperCase());
+  }
+  return capsArray;
+}
 /*
  Задание 5 *:
 
@@ -54,6 +96,17 @@ function upperProps(obj) {}
    obj.foo = 2;
    console.log(obj.foo); // 4
  */
-function createProxy(obj) {}
-
+function createProxy(obj) {
+  obj = new Proxy(obj, {
+    set(target, prop, val) {
+      if (typeof val == 'number') {
+        target[prop] = val * val;
+        return true;
+      } else {
+        return false;
+      }
+    },
+  });
+  return obj;
+}
 export { forEach, map, reduce, upperProps, createProxy };
