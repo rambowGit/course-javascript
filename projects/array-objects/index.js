@@ -30,8 +30,7 @@ function forEach(array, callbackFn) {
 function map(array, fn) {
   const newArray = [];
   for (let i = 0; i < array.length; i++) {
-    fn(array[i], i, array);
-    newArray.push(array[i] ** 2);
+    newArray.push(fn(array[i], i, array));
   }
 
   return newArray;
@@ -49,24 +48,21 @@ function map(array, fn) {
    reduce([1, 2, 3], (all, current) => all + current) // 6
  */
 function reduce(array, fn, initial) {
-  let sum;
-  if (initial) {
-    sum = initial;
+  let result;
+  let i;
 
-    for (let i = 0; i < array.length; i++) {
-      fn(sum, array[i], i, array);
-      // console.log(sum);
-      sum = sum + array[i];
-    }
+  if (initial) {
+    result = initial;
+    i = 0;
   } else {
-    sum = array[0];
-    for (let i = 1; i < array.length; i++) {
-      fn(sum, array[i], i, array);
-      // console.log(sum);
-      sum = sum + array[i];
-    }
+    result = array[0];
+    i = 1;
   }
-  return sum;
+
+  for (i; i < array.length; i++) {
+    result = fn(result, array[i], i, array);
+  }
+  return result;
 }
 
 /*
