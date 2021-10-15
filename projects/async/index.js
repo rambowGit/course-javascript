@@ -39,7 +39,18 @@ const homeworkContainer = document.querySelector('#app');
  Массив городов пожно получить отправив асинхронный запрос по адресу
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
-function loadTowns() {}
+function loadTowns() {
+    let promise = new Promise((resolve, reject) => {
+
+        let result = fetch('https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json')
+            .then(response => response.json())
+            .then(data => {
+                data.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0)
+                resolve(data);
+            });
+    });
+    return promise;
+}
 
 /*
  Функция должна проверять встречается ли подстрока chunk в строке full
@@ -52,7 +63,34 @@ function loadTowns() {}
    isMatching('Moscow', 'SCO') // true
    isMatching('Moscow', 'Moscov') // false
  */
-function isMatching(full, chunk) {}
+function isMatching(full, chunk) {
+    if (chunk.length == 0)
+        return 0; // Immediate match
+
+    // Compute longest suffix-prefix table
+    var lsp = [0]; // Base case
+    for (var i = 1; i < chunk.length; i++) {
+        var j = lsp[i - 1]; // Start by assuming we're extending the previous LSP
+        while (j > 0 && chunk.charAt(i) != chunk.charAt(j))
+            j = lsp[j - 1];
+        if (chunk.charAt(i) == chunk.charAt(j))
+            j++;
+        lsp.push(j);
+    }
+
+    // Walk through full string
+    var j = 0; // Number of chars matched in chunk
+    for (var i = 0; i < full.length; i++) {
+        while (j > 0 && full.charAt(i) != chunk.charAt(j))
+            j = lsp[j - 1]; // Fall back in the chunk
+        if (full.charAt(i) == chunk.charAt(j)) {
+            j++; // Next char matched, increment position
+            if (j == chunk.length)
+                return i - (j - 1);
+        }
+    }
+    return -1; // Not found
+}
 
 /* Блок с надписью "Загрузка" */
 const loadingBlock = homeworkContainer.querySelector('#loading-block');
