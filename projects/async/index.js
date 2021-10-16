@@ -40,16 +40,9 @@ const homeworkContainer = document.querySelector('#app');
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
 function loadTowns() {
-    let promise = new Promise((resolve, reject) => {
-
-        let result = fetch('https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json')
-            .then(response => response.json())
-            .then(data => {
-                data.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0)
-                resolve(data);
-            });
-    });
-    return promise;
+  return fetch('https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json')
+    .then((response) => response.json())
+    .then((data) => data.sort((a, b) => a.name.localeCompare(b.name)));
 }
 
 /*
@@ -64,32 +57,7 @@ function loadTowns() {
    isMatching('Moscow', 'Moscov') // false
  */
 function isMatching(full, chunk) {
-    if (chunk.length == 0)
-        return 0; // Immediate match
-
-    // Compute longest suffix-prefix table
-    var lsp = [0]; // Base case
-    for (var i = 1; i < chunk.length; i++) {
-        var j = lsp[i - 1]; // Start by assuming we're extending the previous LSP
-        while (j > 0 && chunk.charAt(i) != chunk.charAt(j))
-            j = lsp[j - 1];
-        if (chunk.charAt(i) == chunk.charAt(j))
-            j++;
-        lsp.push(j);
-    }
-
-    // Walk through full string
-    var j = 0; // Number of chars matched in chunk
-    for (var i = 0; i < full.length; i++) {
-        while (j > 0 && full.charAt(i) != chunk.charAt(j))
-            j = lsp[j - 1]; // Fall back in the chunk
-        if (full.charAt(i) == chunk.charAt(j)) {
-            j++; // Next char matched, increment position
-            if (j == chunk.length)
-                return i - (j - 1);
-        }
-    }
-    return -1; // Not found
+  return full.toLowerCase().includes(chunk.toLowerCase());
 }
 
 /* Блок с надписью "Загрузка" */
@@ -105,8 +73,54 @@ const filterInput = homeworkContainer.querySelector('#filter-input');
 /* Блок с результатами поиска */
 const filterResult = homeworkContainer.querySelector('#filter-result');
 
-retryButton.addEventListener('click', () => {});
+// начальное состояние
+let towns = [];
+// т.к. загрузка пока не произошла
+loadingFailedBlock.classList.add('hidden');
+filterBlock.classList.add('hidden');
 
-filterInput.addEventListener('input', function () {});
+// приклике на 'Повторить', вызываем загрузку городов
+retryButton.addEventListener('click', () => {
+  tryToloadTowns();
+});
+
+// при вводе названий городов, обновляем DOM
+filterInput.addEventListener('input', function () {
+  updateFilter(this.value);
+});
+
+// загрузка городов, обновление DOM
+async function tryToloadTowns() {
+  try {
+    towns = await loadTowns();
+    loadingBlock.classList.add('hidden');
+    loadingFailedBlock.classList.add('hidden');
+    filterBlock.classList.remove('hidden');
+  } catch (err) {
+    console.log('error loading:', err);
+    loadingBlock.classList.add('hidden');
+    loadingFailedBlock.classList.remove('hidden');
+  }
+}
+
+//обновление DOM списком городов, который вернул фильтр updateFilter
+function updateFilter(filterValue) {
+  filterResult.innerHTML = '';
+
+  const fragment = document.createDocumentFragment();
+
+  for (const town of towns) {
+    if (filterValue && isMatching(town.name, filterValue)) {
+      const towtDiv = document.createElement('div');
+      towtDiv.textContent = town.name;
+      fragment.append(towtDiv);
+    }
+  }
+
+  filterResult.append(fragment);
+}
+
+// функция вызывается сразу после загрузки станицы
+tryToloadTowns();
 
 export { loadTowns, isMatching };

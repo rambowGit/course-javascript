@@ -9,18 +9,14 @@
    delayPromise(3) // вернет promise, который будет разрешен через 3 секунды
  */
 function delayPromise(seconds) {
-
-    // Создаётся объект promise
-    let promise = new Promise((resolve, reject) => {
-
-        setTimeout(() => {
-            // переведёт промис в состояние fulfilled с результатом "result"
-            resolve("result");
-        }, seconds*1000);
-
-    });
-    return promise;
-
+  // Создаётся объект promise
+  const promise = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // переведёт промис в состояние fulfilled с результатом "result"
+      resolve('result');
+    }, seconds * 1000);
+  });
+  return promise;
 }
 
 /*
@@ -37,17 +33,9 @@ function delayPromise(seconds) {
    loadAndSortTowns().then(towns => console.log(towns)) // должна вывести в консоль отсортированный массив городов
  */
 function loadAndSortTowns() {
-
-    let promise = new Promise((resolve, reject) => {
-
-        let result = fetch('https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json')
-            .then(response => response.json())
-            .then(data => {
-                data.sort((a, b) => (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0)
-                resolve(data);
-            });
-    });
-    return promise;
+  return fetch('https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json')
+    .then((response) => response.json())
+    .then((data) => data.sort((a, b) => a.name.localeCompare(b.name)));
 }
 
 export { delayPromise, loadAndSortTowns };
