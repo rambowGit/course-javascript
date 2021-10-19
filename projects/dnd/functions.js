@@ -8,7 +8,9 @@
  Пример:
    addListener('click', document.querySelector('a'), () => console.log('...')) // должна добавить указанный обработчик кликов на указанный элемент
  */
-function addListener(eventName, target, fn) {}
+function addListener(eventName, target, fn) {
+  target.addEventListener(eventName, fn);
+}
 
 /*
  Задание 2:
@@ -18,7 +20,9 @@ function addListener(eventName, target, fn) {}
  Пример:
    removeListener('click', document.querySelector('a'), someHandler) // должна удалить указанный обработчик кликов на указанный элемент
  */
-function removeListener(eventName, target, fn) {}
+function removeListener(eventName, target, fn) {
+  target.removeEventListener(eventName, fn);
+}
 
 /*
  Задание 3:
@@ -28,7 +32,11 @@ function removeListener(eventName, target, fn) {}
  Пример:
    skipDefault('click', document.querySelector('a')) // после вызова функции, клики на указанную ссылку не должны приводить к переходу на другую страницу
  */
-function skipDefault(eventName, target) {}
+function skipDefault(eventName, target) {
+  target.addEventListener(eventName, function () {
+    () => eventName.preventDefault();
+  });
+}
 
 /*
  Задание 4:
@@ -38,7 +46,9 @@ function skipDefault(eventName, target) {}
  Пример:
    emulateClick(document.querySelector('a')) // для указанного элемента должно быть симулировано события click
  */
-function emulateClick(target) {}
+function emulateClick(target) {
+  target.click();
+}
 
 /*
  Задание 6:
