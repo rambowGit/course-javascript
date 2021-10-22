@@ -41,7 +41,7 @@ addDivButton.addEventListener('click', () => {
 });
 
 
-document.addEventListener('mousedown', function (event) {
+homeworkContainer.addEventListener('mousedown', function (event) {
 
   if (event.target.classList.contains('draggable-div')){
 
