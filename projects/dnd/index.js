@@ -43,7 +43,7 @@ addDivButton.addEventListener('click', () => {
 
 document.addEventListener('mousedown', function (event) {
 
-  if (event.target.id == 'draggable-div'){
+  if (event.target.classList.contains('draggable-div')){
 
     let drDiv = event.target;
 
@@ -75,7 +75,7 @@ document.addEventListener('mousedown', function (event) {
 
 
 
-function createDiv() {
+export function createDiv() {
 
   const newDiv = document.createElement('DIV');
   newDiv.style.background = randomColor();
@@ -87,7 +87,7 @@ function createDiv() {
   // newDiv.style.borderRadius = "50%";
   // newDiv.style.textAlign = "center";
   // newDiv.style.verticalAlign = "middle";
-  newDiv.id ="draggable-div";
+  newDiv.classList.add("draggable-div");
   // newDiv.style.position='absolute';
 
   return newDiv;

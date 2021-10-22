@@ -60,12 +60,11 @@ function emulateClick(target) {
 function delegate(target, fn) {
   const requiredNode = 'BUTTON';
 
-  Array.from(target.children).forEach(node => {
-    if (node.nodeName === requiredNode) {
-      node.addEventListener('click', fn)
+  target.addEventListener('click', function (event) {
+    if (event.target.nodeName === requiredNode) {
+      fn();
     }
-  });
-
+  })
 }
 
 /*
