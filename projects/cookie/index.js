@@ -33,6 +33,28 @@ import './cookie.html';
    const newDiv = document.createElement('div');
    homeworkContainer.appendChild(newDiv);
  */
+// const homeworkContainer = document.querySelector('#app');
+// // текстовое поле для фильтрации cookie
+// const filterNameInput = homeworkContainer.querySelector('#filter-name-input');
+// // текстовое поле с именем cookie
+// const addNameInput = homeworkContainer.querySelector('#add-name-input');
+// // текстовое поле со значением cookie
+// const addValueInput = homeworkContainer.querySelector('#add-value-input');
+// // кнопка "добавить cookie"
+// const addButton = homeworkContainer.querySelector('#add-button');
+// // таблица со списком cookie
+// const listTable = homeworkContainer.querySelector('#list-table tbody');
+//
+// filterNameInput.addEventListener('input', function () {});
+//
+// addButton.addEventListener('click', () => {});
+//
+// listTable.addEventListener('click', (e) => {});
+
+
+
+
+
 const homeworkContainer = document.querySelector('#app');
 // текстовое поле для фильтрации cookie
 const filterNameInput = homeworkContainer.querySelector('#filter-name-input');
@@ -45,8 +67,150 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
-filterNameInput.addEventListener('input', function () {});
+// значение фильтра
+let filterValue = filterNameInput.value;
 
-addButton.addEventListener('click', () => {});
+// фильтрация
+function isMatching(full, chunk) {
+  return full.toLowerCase().includes(chunk.toLowerCase());
+}
 
-listTable.addEventListener('click', (e) => {});
+//обновление DOM списком городов, который вернул фильтр updateFilter
+function updateFilter(filterValue) {
+  // получение всех cookies
+  let cookies = getCookies();
+
+  const fragment = document.createDocumentFragment();
+  fragment.innerHTML = ''; // иначе fragment.innerHTML == undefined в первой строке таблицы
+
+  for (const key in cookies) {
+    if (filterValue && isMatching(key, filterValue)) {
+      fragment.innerHTML +=
+        `<tr>
+                <td>${key}</td>
+                <td>${cookies[key]}</td>
+                <td><button class = 'deleteButton'>Delete</button></td>            
+            </tr>`
+    }
+  }
+
+  if (fragment.innerHTML === ''){
+    createCookieTable(cookies, filterValue);
+  } else {
+    console.log("fragment.innerHTML: ", fragment.innerHTML);
+    listTable.innerHTML = fragment.innerHTML;
+  }
+}
+
+/*
+ список кук в виде объекта
+ */
+function getCookies() {
+  return  document.cookie.split('; ').reduce((prev, current) => {
+    const [name, value] = current.split('=');
+    prev[name] = value;
+    return prev;
+  }, {});
+}
+
+// верстка таблицы
+function createCookieTable(cookieObject, filterValue) {
+  console.log("filterValue: ", filterValue);
+
+  listTable.innerHTML='';
+
+  for (let key in cookieObject) {
+    if (!key)
+      return; //если кук нет
+    else if (filterValue && isMatching(key, filterValue)) { // таблицу добавляем только то, что соответствует фильтру
+
+      console.log( "1: ", isMatching(key, filterValue));
+
+      listTable.innerHTML +=
+        `<tr>
+                    <td>${key}</td>
+                    <td>${cookieObject[key]}</td>
+                    <td><button class = 'deleteButton'>Delete</button></td>            
+                </tr>`
+    } else if (filterValue === undefined || !filterValue) {  // если нет фильтра
+      console.log( "2: no filter");
+
+      listTable.innerHTML +=
+        `<tr>
+                    <td>${key}</td>
+                    <td>${cookieObject[key]}</td>
+                    <td><button class = 'deleteButton'>Delete</button></td>            
+                </tr>`
+    } else {
+      console.log("3: ", cookieObject);
+    }
+
+  }
+}
+
+
+/*
+ удаление cookie
+ */
+function deleteCookie(name) {
+  let domain = location.hostname,
+    path = '/'; // root path
+
+  document.cookie = [
+    name, '=',
+    '; expires=' + new Date(0).toUTCString(),
+    '; path=' + path,
+    '; domain=' + domain
+  ].join('');
+}
+
+
+/*
+ удаление строки из таблицы
+ */
+function removeRowAndCookie(event) {
+  if (!event.target.classList.contains('deleteButton'))
+    return;
+
+  // кнопка удаления
+  const delBtnEl = event.target;
+  // удаление cookie
+  let cookieKey = delBtnEl.closest('tr').firstElementChild.innerHTML;
+  deleteCookie(cookieKey);
+  // удаление строки
+  delBtnEl.closest('tr').remove();
+}
+
+/*
+добавление новой cookie
+ */
+
+function createCookie(){
+  // фильтр
+  let filterValue = filterNameInput.value;
+
+  document.cookie = `${addNameInput.value}=${addValueInput.value}`;
+  addNameInput.value = '';
+  addValueInput.value = '';
+
+  // получение всех cookies
+  let cookies = getCookies();
+  // перерисовываем таблицу с куками
+  createCookieTable(cookies, filterValue);
+
+}
+
+// получение всех cookies
+let cookies = getCookies();
+// создаем таблицу из кук
+createCookieTable(cookies, filterNameInput.value);
+// удаляем строку с кукой из таблицы и куку из браузера
+listTable.addEventListener('click', removeRowAndCookie);
+// добавление cookie
+addButton.addEventListener('click', createCookie);
+//обновление таблицы результатом фильтра
+filterNameInput.addEventListener('input', function () {
+  updateFilter(this.value);
+});
+
+
