@@ -33,7 +33,9 @@ function removeListener(eventName, target, fn) {
    skipDefault('click', document.querySelector('a')) // после вызова функции, клики на указанную ссылку не должны приводить к переходу на другую страницу
  */
 function skipDefault(eventName, target) {
-  target.addEventListener(eventName,  eventName => eventName.preventDefault() );
+  target.addEventListener(eventName, (e) => {
+    e.preventDefault();
+  });
 }
 
 /*
@@ -45,7 +47,7 @@ function skipDefault(eventName, target) {
    emulateClick(document.querySelector('a')) // для указанного элемента должно быть симулировано события click
  */
 function emulateClick(target) {
-  target.click();
+  target.dispatchEvent(new MouseEvent('click'));
 }
 
 /*
@@ -58,13 +60,11 @@ function emulateClick(target) {
    delegate(document.body, () => console.log('кликнули на button')) // добавит такой обработчик кликов для body, который будет вызывать указанную функцию только если кликнули на кнопку (элемент с тегом button)
  */
 function delegate(target, fn) {
-  const requiredNode = 'BUTTON';
-
-  target.addEventListener('click', function (event) {
-    if (event.target.nodeName === requiredNode) {
+  target.addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON') {
       fn();
     }
-  })
+  });
 }
 
 /*
@@ -76,21 +76,15 @@ function delegate(target, fn) {
  Пример:
    once(document.querySelector('button'), () => console.log('обработчик выполнился!')) // добавит такой обработчик кликов для указанного элемента, который вызовется только один раз и затем удалится
  */
-
-// function once(target, fn) {
-//   target.addEventListener('click', function handler() {
-//     fn();
-//     this.removeEventListener('click', handler);
-//   });
-// }
-
 function once(target, fn) {
-  target.addEventListener( 'click', () => {
-    fn();
-  }, { once: true } );
+  let already = false;
+
+  target.addEventListener('click', () => {
+    if (!already) {
+      fn();
+      already = true;
+    }
+  });
 }
-
-
-
 
 export { addListener, removeListener, skipDefault, emulateClick, delegate, once };

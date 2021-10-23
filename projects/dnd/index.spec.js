@@ -1,6 +1,6 @@
 describe('ДЗ 5.2 - Div D&D', () => {
   const dndPage = require('./index');
-  const homeworkContainer = document.querySelector('#app');
+  const homeworkContainer = document.querySelector('#homework-container');
   let addDivButton;
 
   describe('Функциональное тестирование', () => {
