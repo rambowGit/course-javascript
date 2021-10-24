@@ -51,7 +51,7 @@ import './cookie.html';
 //
 // listTable.addEventListener('click', (e) => {});
 
-const homeworkContainer = document.querySelector('#app');
+const homeworkContainer = document.querySelector('#homework-container');
 // текстовое поле для фильтрации cookie
 const filterNameInput = homeworkContainer.querySelector('#filter-name-input');
 // текстовое поле с именем cookie
@@ -77,7 +77,10 @@ function updateFilter(filterValue) {
   fragment.innerHTML = ''; // иначе fragment.innerHTML == undefined в первой строке таблицы
 
   for (const key in cookies) {
-    if (filterValue && isMatching(key, filterValue)) {
+    if (
+      (filterValue && isMatching(key, filterValue)) ||
+      isMatching(cookies[key], filterValue)
+    ) {
       fragment.innerHTML += `<tr>
                 <td>${key}</td>
                 <td>${cookies[key]}</td>
@@ -114,7 +117,10 @@ function createCookieTable(cookieObject, filterValue) {
   for (const key in cookieObject) {
     if (!key) return;
     //если кук нет
-    else if (filterValue && isMatching(key, filterValue)) {
+    else if (
+      (filterValue && isMatching(key, filterValue)) ||
+      isMatching(cookieObject[key], filterValue)
+    ) {
       // таблицу добавляем только то, что соответствует фильтру
 
       console.log('1: ', isMatching(key, filterValue));
@@ -143,15 +149,15 @@ function createCookieTable(cookieObject, filterValue) {
  удаление cookie
  */
 function deleteCookie(name) {
-  const domain = location.hostname,
-    path = '/'; // root path
+  // const domain = location.hostname,
+  //   path = '/'; // root path
 
   document.cookie = [
     name,
     '=',
     '; expires=' + new Date(0).toUTCString(),
-    '; path=' + path,
-    '; domain=' + domain,
+    // '; path=' + path,
+    // '; domain=' + domain,
   ].join('');
 }
 
@@ -179,8 +185,8 @@ function createCookie() {
   const filterValue = filterNameInput.value;
 
   document.cookie = `${addNameInput.value}=${addValueInput.value}`;
-  addNameInput.value = '';
-  addValueInput.value = '';
+  // addNameInput.value = '';
+  // addValueInput.value = '';
 
   // получение всех cookies
   const cookies = getCookies();
