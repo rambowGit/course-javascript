@@ -15,18 +15,99 @@
     border-radius: 20px;
 }
 
-.map__balloon {
-    padding: 20px;
-    font-size: 30px;
-    line-height: 1;
-    color: #ffffff;
-    background-color: #f9b43b;
-    background-image: linear-gradient(to top, #f9b43b 0%, #eb8c38 48%, #f9b43b 74%, #f9b43b 100%);
-    border-radius: 20px;
+.balloon_container {
+    width: 353px;
+    height: 351px;
+    background: #FFFFFF;
+    /*box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3)*/
 }
 
-.map__burger-img {
-    float: right;
-    height: 100px;
-    width: 100px;
+.comment_header{
+    /*position: absolute;*/
+    width: 58px;
+    height: 18px;
+    margin-left: 17px;
+    margin-top: 29px;
+
+    font-family: Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 18px;
+
+    color: #000000;
 }
+
+.name{
+    /*position: absolute;*/
+    width: 310px;
+    height: 38px;
+    padding: 11px;
+    margin-top: 20px;
+    margin-left: 17px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #1371C8;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
+.location{
+    /*position: absolute;*/
+    width: 310px;
+    height: 38px;
+    padding: 11px;
+    margin-top: 5px;
+    margin-left: 17px;
+
+
+    background: #FFFFFF;
+    border: 1px solid #CFCFCF;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
+.comment_text{
+    /*position: absolute;*/
+    width: 310px;
+    height: 98px;
+    padding: 11px;
+    margin-top: 5px;
+    margin-left: 17px;
+
+    background: #FFFFFF;
+    border: 1px solid #CFCFCF;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
+
+.submit_btn{
+    width: 107px;
+    height: 38px;
+    margin-top: 19px;
+    margin-left: 17px;
+    background: #FF8663;
+    border-radius: 3px;
+    border: none; /*чтобы не было тени*/
+
+
+    font-family: Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+    /*display: flex;*/
+    align-items: center;
+    text-align: center;
+
+    color: #FFFFFF;
+}
+
+
+/*.map__burger-img {*/
+/*    float: right;*/
+/*    height: 100px;*/
+/*    width: 100px;*/
+/*}*/
