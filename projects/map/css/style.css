@@ -15,11 +15,17 @@
     border-radius: 20px;
 }
 
+.balloon_placemark_container{
+    width: 1353px;
+    height: 1351px;
+    background: #f5ffdd;
+}
+
+
 .balloon_container {
     width: 353px;
     height: 351px;
     background: #FFFFFF;
-    /*box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3)*/
 }
 
 .comment_header{
@@ -105,9 +111,15 @@
     color: #FFFFFF;
 }
 
+.submit_btn a:link {
+    color: #FFFFFF;
+    background-color: transparent;
+    text-decoration: none;
+}
 
-/*.map__burger-img {*/
-/*    float: right;*/
-/*    height: 100px;*/
-/*    width: 100px;*/
-/*}*/
+.submit_btn a:visited {
+    color: #FFFFFF;
+    background-color: transparent;
+    text-decoration: none;
+}
+
