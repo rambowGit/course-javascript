@@ -23,36 +23,3 @@ export const baloonTemplate = `
     </div>
 </form>`;
 
-
-export const slideshowTemplateHeader = `
-<div class="container">
-    <div class='row'>
-        <div class='col-md-offset-2 col-md-8'>
-            <div class="carousel slide" data-ride="carousel" id="quote-carousel">
-                <div class="carousel-inner">
-                    <!-- Quote 1 -->
-                    <div class="item active">
-                        <blockquote>
-                            <div class="row">
-                                <div class="col-sm-9">
-                                    <p>`;
-
-export const slideshowTemplateBody = `                                  
-                                     <li>Место: {{"mapLocation"}}</li>
-                                     <li>Отзыв: {{"userComment"}}</li>
-                                     <small>{{"userName"}}</small>
-                                    <!-- Carousel Buttons Next/Prev -->
-                                  <a data-slide="prev" href="#quote-carousel" class="left carousel-control"> <i class="fa fa-chevron-left"></i></a>
-                                  <a data-slide="next" href="#quote-carousel" class="right carousel-control"> <i class="fa fa-chevron-right"></i></a>`;
-
-export const slideshowTemplateFooter = `
-                                    </p>
-                                </div>
-                            </div>
-                        </blockquote>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>`;

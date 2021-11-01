@@ -33,22 +33,53 @@ window.addEventListener('DOMContentLoaded', (event) => {
         zoom: 12,
         controls: ['zoomControl'],
         behaviors: ['drag', 'scrollZoom']
-      }, {
+      },
+      {
         searchControlProvider: 'yandex#search'
       }),
+
+
+      /*
+       Карусель
+       https://yandex.ru/dev/maps/jsbox/2.1/cluster_balloon_carousel/
+       */
+      // Создаем собственный макет с информацией о выбранном геообъекте.
+      customItemContentLayout = ymaps.templateLayoutFactory.createClass(
+      // Флаг "raw" означает, что данные вставляют "как есть" без экранирования html.
+      // '<h2 >{{ properties.balloonContentHeader|raw }}</h2>' +
+      // '<div>{{ properties.balloonContentBody|raw }}</div>' +
+      '<div >{{ properties.balloonContentFooter|raw }}</div>'
+    ),
+
+
       /**
        * Создадим кластеризатор, вызвав функцию-конструктор.
        * Список всех опций доступен в документации.
        * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/Clusterer.xml#constructor-summary
        */
-      clusterer = new ymaps.Clusterer({
-
-        /**
-         * Ставим true, если хотим кластеризовать только точки с одинаковыми координатами.
-         */
-        groupByCoordinates: false,
-
-      }),
+    clusterer = new ymaps.Clusterer({
+      clusterDisableClickZoom: true,
+      clusterOpenBalloonOnClick: true,
+      // Устанавливаем стандартный макет балуна кластера "Карусель".
+      clusterBalloonContentLayout: 'cluster#balloonCarousel',
+      // Устанавливаем собственный макет.
+      clusterBalloonItemContentLayout: customItemContentLayout,
+      // Устанавливаем режим открытия балуна.
+      // В данном примере балун никогда не будет открываться в режиме панели.
+      clusterBalloonPanelMaxMapArea: 0,
+      // Устанавливаем размеры макета контента балуна (в пикселях).
+      clusterBalloonContentLayoutWidth: 200,
+      clusterBalloonContentLayoutHeight: 130,
+      // Устанавливаем максимальное количество элементов в нижней панели на одной странице
+      clusterBalloonPagerSize: 5
+      // Настройка внешнего вида нижней панели.
+      // Режим marker рекомендуется использовать с небольшим количеством элементов.
+      // clusterBalloonPagerType: 'marker',
+      // Можно отключить зацикливание списка при навигации при помощи боковых стрелок.
+      // clusterBalloonCycling: false,
+      // Можно отключить отображение меню навигации.
+      // clusterBalloonPagerVisible: false
+    }),
       /**
        * Функция возвращает объект, содержащий данные метки.
        * Поле данных clusterCaption будет отображено в списке геообъектов в балуне кластера.
@@ -70,50 +101,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
           '<hr>'+
           '{{/each}}'
         );
-
-
-         //TODO: доделать карусель
-
-        //  const pointBaloonTemplate = Handlebars.compile(
-        //    slideshowTemplateHeader+
-        //   '{{#each comments}}' +
-        //     slideshowTemplateBody +
-        //   '{{/each}}'+
-        //    slideshowTemplateFooter
-        // );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         return {
@@ -150,12 +137,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
     }
 
-    /**
-     * Можно менять опции кластеризатора после создания.
-     */
-    clusterer.options.set({
-      clusterDisableClickZoom: false
-    });
 
     /**
      * В кластеризатор можно добавить javascript-массив меток (не геоколлекцию) или одну метку.
