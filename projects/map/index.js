@@ -256,7 +256,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
       myMap.geoObjects.add(newPoint);
 
-      // тут храняться текущие плейсмарки, еще не сохраненные в local storage
+      /*
+       тут храняться текущие плейсмарки, еще не сохраненные в local storage
+       coords берутся выше: coords = event.get('coords');
+       */
       newPoints.push({
         coords: coords,
         balloonForm: [balloonForm]
@@ -275,7 +278,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
       pointStorage.forEach( point => {
 
-
+        // coords берутся выше: coords = point.geometry.getCoordinates();
         if (point["coords"] === coords) {
           console.log(point['coords']);
 
