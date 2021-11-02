@@ -18,9 +18,13 @@ const pointStorage =  JSON.parse(localStorage.mapData || '[]');
 let newPoints = [];
 // глобальная переменная для хранения заполненной формы балуна и балуна метки
 let balloonForm = {};
-//
+// флаги, для проверки - с каким их балунов мы работает: просто балун, или балун метки
 let isNewBallon;
 let isPointBalloon;
+// глобальная переменная для хранения координат разных геообъектоа
+let coords = [];
+// адрес для балуна точки и балуна кластера
+let address = 'не определено';
 
 
 
@@ -46,9 +50,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
       // Создаем собственный макет с информацией о выбранном геообъекте.
       customItemContentLayout = ymaps.templateLayoutFactory.createClass(
       // Флаг "raw" означает, что данные вставляют "как есть" без экранирования html.
-      // '<h2 >{{ properties.balloonContentHeader|raw }}</h2>' +
+      '<small style="background: #e8e7ca">{{ properties.balloonContentHeader|raw }}</small>' +
       // '<div>{{ properties.balloonContentBody|raw }}</div>' +
-      '<div >{{ properties.balloonContentFooter|raw }}</div>'
+      '<div>{{ properties.balloonContentFooter|raw }}</div>'
     ),
 
 
@@ -92,7 +96,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
       getPointData = function (index, data) {
 
-       // предыдущие отзывы
+       /*
+        Предыдущие отзывы.
+        Handlebars.compile возвращает функцию, принимающую, например, объект.
+        */
         const pointBaloonTemplate = Handlebars.compile(
           '{{#each comments}}' +
           '<li><b>Имя: {{"userName"}}</b></li>'+
@@ -104,6 +111,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 
         return {
+          balloonContentHeader: address,
           balloonContentBody:  baloonTemplate,
           balloonContentFooter: '<span style="font-size: xx-small; ">Информация предоставлена: </span> балуном <strong>метки ' +index +'</strong><br>'+
                                 '<span style="font-size: xx-small; ">' +
@@ -119,21 +127,25 @@ window.addEventListener('DOMContentLoaded', (event) => {
      * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/Placemark.xml#constructor-summary
      */
 
-    // устанавливаем из localsorage метки на карте
+    // устанавливаем из localstorage метки на карте
     for(var i = 0, len = pointStorage.length; i < len; i++) {
+
+      coords = pointStorage[i]['coords'];
 
       let renderData = {
         comments : []
       };
 
-      pointStorage[i]['balloonForm']
-        .forEach(arrayOfComments => {
+      pointStorage[i]['balloonForm'].forEach(arrayOfComments => {
           renderData.comments.push(arrayOfComments);
           console.log(renderData);
 
         });
 
-      myPoints[i] = new ymaps.Placemark(pointStorage[i]['coords'], getPointData(i, renderData));
+      myPoints[i] = createPlacemark(coords, getPointData(i, renderData));
+
+      // получаем адрес точки и записываем его в балун
+      getAddress(coords, myPoints[i]);
 
     }
 
@@ -160,9 +172,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
     /*
      клики по карте, создание балуна
      */
-    let coords = [];
-    myMap.events.add('click', function (event) {
 
+    myMap.events.add('click', function (event) {
+      // при сабмите формы, нужно понять - это новый балун или балун метки
       isNewBallon = true;
 
       // Получение координат щелчка
@@ -185,8 +197,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
       point.balloon.events.add('open', function (e) {
         // Получение координат метки
-        coords = point["geometry"]["_coordinates"];
+        coords = point.geometry.getCoordinates();
+        console.log("coords: ", coords);
 
+        // при сабмите формы, нужно понять - это новый балун или балун метки
         isPointBalloon = true;
 
       });
@@ -205,8 +219,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
           let mapLocationEl = document.querySelector('#location');
           let userCommentEl = document.querySelector('#comment_text');
 
-          if(!userNameEl.value || !mapLocationEl.value || !userCommentEl.value)
-            alert('Пожалуйста, запоните все поля на форме.');
+          // if(!userNameEl.value || !mapLocationEl.value || !userCommentEl.value) {
+          //   alert('Пожалуйста, заполните все поля на форме.');
+          //   return
+          // }
 
           balloonForm = {
             userName: userNameEl.value,
@@ -236,9 +252,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     function saveNewPoint(balloonForm, coords) {
 
       // добавляем новую метку
-      let newPoint = new ymaps.Placemark(coords, {
-
-      });
+      let newPoint = createPlacemark(coords);
 
       myMap.geoObjects.add(newPoint);
 
@@ -263,17 +277,38 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 
         if (point["coords"] === coords) {
-
           console.log(point['coords']);
 
           point['balloonForm'].push(balloonForm);
           storage.mapData = JSON.stringify(pointStorage);
         }
-
-
-
       });
+    }
 
+
+    /*
+     Создание метки.
+     */
+    function createPlacemark(coords, fn) {
+      return new ymaps.Placemark(coords, fn);
+    }
+
+
+
+    /*
+     Определяем адрес по координатам (обратное геокодирование).
+     */
+    function getAddress(coords, myPlacemark) {
+      ymaps.geocode(coords).then(function (res) {
+        let firstGeoObject = res.geoObjects.get(0);
+        address = firstGeoObject.getAddressLine();
+
+        myPlacemark.properties
+          .set({
+            // В заголовке балуна задаем строку с адресом объекта.
+            balloonContentHeader: firstGeoObject.getAddressLine()
+          });
+      });
     }
 
   });
