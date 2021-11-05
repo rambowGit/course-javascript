@@ -1,0 +1,70 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<style>
+
+    .myContainer {
+        margin-top: 100px;
+    }
+
+    .user-list {
+        background: #ff845e;
+    }
+
+    .panel {
+        height: 500px;
+    }
+
+    #messageContainer {
+        overflow-y: hidden;
+        height: 74%;
+    }
+
+    #messageContainer:hover {
+        overflow-y: auto;
+    }
+</style>
+
+
+
+
+
+
+
+<div class="container myContainer">
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h4>Пользователи чата</h4>
+                </div>
+                <div class="panel-body">Users list</div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h4>Сообщения</h4>
+                </div>
+                <div class="panel-body">
+                    Message content
+                    <ul class="list-group" id="messageContainer">
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10">
+            <input type="text" id="messageText" class="form-control" placeholder="Введите сообщение...">
+        </div>
+
+        <div class="col-sm-2">
+            <button class="btn btn-default" id="sendButton">отправить</button>
+        </div>
+    </div>
+
+
+
+</div>
