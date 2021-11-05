@@ -27,6 +27,15 @@
     height: 351px;
     background: #FFFFFF;
 }
+.custom_balloon_header{
+    font-family: Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 18px;
+
+    color: #000000;
+}
 
 .comment_header{
     /*position: absolute;*/

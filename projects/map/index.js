@@ -13,7 +13,7 @@ import {baloonTemplate, storage, slideshowTemplateHeader, slideshowTemplateBody,
  */
 
 // данные
-const pointStorage =  JSON.parse(localStorage.mapData || '[]');
+let pointStorage =  JSON.parse(localStorage.mapData || '[]');
 // массив объектов, в котором хранятся новые точки на карте
 let newPoints = [];
 // глобальная переменная для хранения заполненной формы балуна и балуна метки
@@ -36,7 +36,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
         center: [59.94, 30.32],
         zoom: 12,
         controls: ['zoomControl'],
-        behaviors: ['drag', 'scrollZoom']
+        behaviors: ['drag', 'scrollZoom'],
+        setNightModeEnabled: true
       },
       {
         searchControlProvider: 'yandex#search'
@@ -108,8 +109,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
           '<hr>'+
           '{{/each}}'
         );
-
-
         return {
           balloonContentHeader: address,
           balloonContentBody:  baloonTemplate,
@@ -138,7 +137,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
       pointStorage[i]['balloonForm'].forEach(arrayOfComments => {
           renderData.comments.push(arrayOfComments);
-          console.log(renderData);
+         // console.log(renderData);
 
         });
 
@@ -148,7 +147,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
       getAddress(coords, myPoints[i]);
 
     }
-
 
     /**
      * В кластеризатор можно добавить javascript-массив меток (не геоколлекцию) или одну метку.
@@ -172,14 +170,16 @@ window.addEventListener('DOMContentLoaded', (event) => {
     /*
      клики по карте, создание балуна
      */
-
     myMap.events.add('click', function (event) {
+
+      alert('клик по карте')
+
+
       // при сабмите формы, нужно понять - это новый балун или балун метки
       isNewBallon = true;
 
       // Получение координат щелчка
       coords = event.get('coords');
-      console.log('координаты клика:', coords);
 
       // открываем новый балун
       myMap.balloon.open(coords, {
@@ -190,39 +190,86 @@ window.addEventListener('DOMContentLoaded', (event) => {
     });
 
 
+
     /*
-     сохранение формы балуна метки
+    Балун создан и закрыт. На его месте появился плейсмарк. Клик по плейсмарку,
      */
-    myPoints.forEach(point => {
+    myMap.balloon.events.add("open", function (event) {
 
-      point.balloon.events.add('open', function (e) {
-        // Получение координат метки
-        coords = point.geometry.getCoordinates();
-        console.log("coords: ", coords);
+              pointStorage = JSON.parse(localStorage.mapData || '[]');
 
-        // при сабмите формы, нужно понять - это новый балун или балун метки
-        isPointBalloon = true;
+              alert('происходитоткрытие балуна');
 
-      });
+              // TODO: нужно проще
+            //  coords = (event.get("target")["balloon"]["_balloon"]["_position"] || event.get("target").geometry.getCoordinates());
+             // coords = (event.get("target").geometry.getCoordinates());
+              console.log("big coords: ", coords);
+
+              let renderData = {
+                comments : []
+              };
+
+              for (let i = 0, len = pointStorage.length; i < len; i++) {
+                // почему-то просто два массива не сравнить..
+                if ((pointStorage[i]["coords"][0] === coords[0]) && (pointStorage[i]["coords"][1] === coords[1])){
+
+                  pointStorage[i]['balloonForm'].forEach(arrayOfComments => {
+                    renderData.comments.push(arrayOfComments);
+                  });
+                }
+              }
+
+             // console.log("renderData: ", renderData);
+
+              // получение адреса клика, открытие балуна
+              ymaps.geocode(coords).then(function (res) {
+                let firstGeoObject = res.geoObjects.get(0);
+                address = firstGeoObject.getAddressLine();
+
+                // открываем новый балун
+                myMap.balloon.open(coords, {
+                  //здесь доработать код вывода формы ввода
+                  contentHeader: address,
+                  contentBody: baloonTemplate,
+                  contentFooter: getBallonData(renderData)
+                });
+              });
+
+              // при сабмите формы, нужно понять - это новый балун или балун метки
+              isPointBalloon = true;
+
     });
 
+
+    // /*
+    // сохранение формы балуна метки
+    // */
+    // myPoints.forEach(point => {
+    //
+    //   point.balloon.events.add('open', function (e) {
+    //     // Получение координат метки
+    //     coords = point.geometry.getCoordinates();
+    //     console.log("myPoints coords: ", coords);
+    //
+    //     // при сабмите формы, нужно понять - это новый балун или балун метки
+    //     isPointBalloon = true;
+    //
+    //   });
+    // });
 
 
     /*
       Получение html-формы балуна
     */
       document.addEventListener('submit', (e) => {
-        // e.preventDefault();
+
+        alert(2)
+        e.preventDefault(); // иначе перезагрузка страницы
+
         if (e.target.classList.contains('balloon_container')) {
-          console.log ('сабмит балуна');
           let userNameEl = document.querySelector('#name');
           let mapLocationEl = document.querySelector('#location');
           let userCommentEl = document.querySelector('#comment_text');
-
-          // if(!userNameEl.value || !mapLocationEl.value || !userCommentEl.value) {
-          //   alert('Пожалуйста, заполните все поля на форме.');
-          //   return
-          // }
 
           balloonForm = {
             userName: userNameEl.value,
@@ -233,12 +280,19 @@ window.addEventListener('DOMContentLoaded', (event) => {
           // проверяем, что это новый балун, пока без метки
           if (isNewBallon){
             saveNewPoint(balloonForm, coords);
+            console.log('закрытие нового балуна');
+            myMap.balloon.close();
             isNewBallon = false;
+
+
           }
 
           // если обновляем балун метки
           if (isPointBalloon){
             updatePointBallon(balloonForm);
+            console.log('закрытие балуна точки');
+
+            myMap.balloon.close();
             isPointBalloon = false;
           }
         }
@@ -254,12 +308,48 @@ window.addEventListener('DOMContentLoaded', (event) => {
       // добавляем новую метку
       let newPoint = createPlacemark(coords);
 
-      myMap.geoObjects.add(newPoint);
+     // myMap.geoObjects.add(newPoint);
 
-      /*
-       тут храняться текущие плейсмарки, еще не сохраненные в local storage
-       coords берутся выше: coords = event.get('coords');
-       */
+      myPoints.push(newPoint);
+      /**/
+      clusterer.add(myPoints);
+      myMap.geoObjects.add(clusterer);
+
+
+
+      console.log('new point added: ', myPoints);
+
+        /*
+        сохранение формы балуна метки
+         */
+        myPoints.forEach(point => {
+
+          console.log("myPoints.forEach: ", myPoints);
+
+        point.balloon.events.add('open', function (e) {
+          // Получение координат метки
+          coords = point.geometry.getCoordinates();
+          console.log("myPoints coords: ", coords);
+
+          // при сабмите формы, нужно понять - это новый балун или балун метки
+          isPointBalloon = true;
+
+        });
+      });
+
+
+
+      // клик по последней сознанной точке
+      // newPoint.events.add('click', () => {
+      //   alert('это клик')
+      //
+      //
+      //
+      //
+      //
+      // });
+
+
       newPoints.push({
         coords: coords,
         balloonForm: [balloonForm]
@@ -268,6 +358,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
       // записываем массих текущих placemarks в localstorage
       const concatPlacemarks = [...newPoints, ...pointStorage];
       storage.mapData = JSON.stringify(concatPlacemarks);
+      newPoints = [];
 
     }
 
@@ -276,14 +367,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
      */
     function updatePointBallon(balloonForm) {
 
+      console.log("balloonForm: ", balloonForm);
       pointStorage.forEach( point => {
 
         // coords берутся выше: coords = point.geometry.getCoordinates();
-        if (point["coords"] === coords) {
-          console.log(point['coords']);
+        if ((point["coords"][0] === coords[0]) && (point["coords"][1] === coords[1])) {
+          console.log("координаты совпали");
 
           point['balloonForm'].push(balloonForm);
-          storage.mapData = JSON.stringify(pointStorage);
+          //storage.mapData = JSON.stringify(pointStorage);
         }
       });
     }
@@ -303,9 +395,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
      */
     function getAddress(coords, myPlacemark) {
       ymaps.geocode(coords).then(function (res) {
+
         let firstGeoObject = res.geoObjects.get(0);
         address = firstGeoObject.getAddressLine();
-
         myPlacemark.properties
           .set({
             // В заголовке балуна задаем строку с адресом объекта.
@@ -313,6 +405,25 @@ window.addEventListener('DOMContentLoaded', (event) => {
           });
       });
     }
+
+
+    // рендеринг формы балуна
+    function getBallonData(data) {
+      /*
+       Предыдущие отзывы.
+       Handlebars.compile возвращает функцию, принимающую, например, объект.
+       */
+      const pointBaloonTemplate = Handlebars.compile(
+        '{{#each comments}}' +
+        '<li><b>Имя: {{"userName"}}</b></li>'+
+        '<li>Место: {{"mapLocation"}}</li>'+
+        '<li>Отзыв: {{"userComment"}}</li>'+
+        '<hr>'+
+        '{{/each}}'
+      );
+      return '<span style="font-size: xx-small;">'+pointBaloonTemplate(data)+'</span>'
+    }
+
 
   });
 
