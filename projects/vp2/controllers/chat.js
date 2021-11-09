@@ -10,7 +10,6 @@ import UserPhoto from '../models/userPhoto';
 export default class Chat {
   constructor() {
     this.wsClient = new WSClient(
-      // 'ws://localhost:8000',
       `ws://${location.host}/vp2/ws`, //см. settings.json
       this.onMessage.bind(this)
     );
