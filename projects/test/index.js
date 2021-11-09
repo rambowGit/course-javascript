@@ -4,5 +4,6 @@ const button = document.querySelector('#my-button');
 const result = document.querySelector('#my-result');
 
 button.addEventListener('click', () => {
-  result.textContent = 42;
+  console.log(result);
+  result.innerHTML = 42;
 });
