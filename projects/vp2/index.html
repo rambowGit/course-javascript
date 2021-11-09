@@ -1,0 +1,147 @@
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<style>
+
+    .myContainer{
+        margin-top: 100px;
+    }
+
+    .form-control {
+        height: 50px;
+        margin: auto;
+    }
+
+    .panel-login {
+        /*width: 500px;*/
+        height: 300px;
+    }
+
+    h4{
+        text-align: center;
+    }
+
+    #login-form{
+        text-align: center;
+        width: 300px;
+        margin-left: 100px;
+        margin-top: 50px;
+
+    }
+
+    #sendButton{
+        text-align: center;
+        height: 50px;
+        width: 160px;
+    }
+
+    .chat-panel {
+        height: 600px;
+    }
+
+    .user-panel {
+        height: 600px;
+    }
+
+    .login-submit {
+        margin-top: 30px;
+    }
+
+    .user-photo, .message-item-photo {
+        margin-right: 15px;
+        background: url(/projects/chat/img/no-photo.png);
+        background-size: cover;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+    }
+
+    .user-list-header {
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    .user-list {
+        padding: 5px 0 0 10px
+    }
+
+</style>
+
+<!--логин-форма-->
+<div id="login"  class="container myContainer hidden">
+
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+
+        <div class="panel panel-primary panel-login">
+                <div class="panel-heading">
+                    <h4>Добро пожаловать в Chat</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="col-md-6">
+                        <input type="text" id="login-form" class="form-control" data-role="login-name-input" placeholder="Введите свой логин">
+                    </div>
+                    <div class="col-md-6 col-md-offset-5">
+                        <button class="btn btn-default login-submit" data-role="login-submit">войти</button>
+                        <div class="login-error" data-role="login-error"></div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--основное окно чата-->
+<div id="main" class="container myContainer hidden">
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-primary user-panel">
+                <div class="panel-heading">
+                    <h4>Пользователи чата</h4>
+                </div>
+                <div class="panel-body">
+
+                    <div class="user-info">
+                        <div class="user-photo" data-role="user-photo"></div>
+                        <div class="user-name" data-role="user-name"></div>
+                    </div>
+
+                    <div class="user-list-container">
+                        <div class="user-list-header">
+                            Все пользователи:
+                        </div>
+
+                        <div class="user-list" data-role="user-list">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="panel panel-primary chat-panel">
+                <div class="panel-heading">
+                    <h4>Сообщения</h4>
+                </div>
+                <div class="panel-body" data-role="messages-list">
+                    Message content
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row"  data-role="message-sender">
+        <div class="col-md-10">
+            <input type="text" id="messageText" class="form-control" data-role="message-input" placeholder="Введите сообщение...">
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary" id="sendButton" data-role="message-send-button">отправить</button>
+        </div>
+    </div>
+
+</div>

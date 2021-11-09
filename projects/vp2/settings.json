@@ -1,0 +1,14 @@
+{
+  "proxy": {
+    "/vp2/ws": {
+      "target": "ws://localhost:8000",
+      "ws": true
+    },
+    "/vp2/upload-photo": {
+      "target": "http://localhost:8000"
+    },
+    "/vp2/photos": {
+      "target": "http://localhost:8000"
+    }
+  }
+}
